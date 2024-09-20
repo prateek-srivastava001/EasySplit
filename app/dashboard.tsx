@@ -2,16 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Ionicons } from '@expo/vector-icons';  // Import icons for the profile and navigation
+import { Ionicons } from '@expo/vector-icons';  
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Colors } from '@/constants/Colors';  // Import for using colors based on theme
+import { Colors } from '@/constants/Colors';  
+import HomeScreen from './home';  
 
 export default function DashboardScreen() {
   const [user, setUser] = useState(null);
-  const router = useRouter();
+  const [activeScreen, setActiveScreen] = useState('home'); 
+  const router = useRouter();  
   const [name, setName] = useState("");
-  
+
   useEffect(() => {
     checkAuth();
   }, []);
@@ -55,6 +57,21 @@ export default function DashboardScreen() {
     }
   };
 
+  const renderActiveScreen = () => {
+    switch (activeScreen) {
+      case 'home':
+        return <HomeScreen />;
+      case 'search':
+        return <ThemedText>Search Screen (placeholder)</ThemedText>;
+      case 'favorites':
+        return <ThemedText>Favorites Screen (placeholder)</ThemedText>;
+      case 'settings':
+        return <ThemedText>Settings Screen (placeholder)</ThemedText>;
+      default:
+        return <HomeScreen />;
+    }
+  };
+
   if (!user) {
     return (
       <ThemedView style={styles.container}>
@@ -65,31 +82,44 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Profile Icon on the Top Right */}
-      <View style={styles.topRight}>
-        <TouchableOpacity onPress={() => router.push('/profile')}>
+      {/* Profile Icon on the Top Left */}
+      <View style={styles.topLeft}>
+        <TouchableOpacity>
           <Ionicons name="person-circle-outline" size={32} color={Colors.light.text} />
+        </TouchableOpacity>
+      </View>
+
+      {/* Notification Icon on the Top Right */}
+      <View style={styles.topRight}>
+        <TouchableOpacity>
+          <Ionicons name="notifications-outline" size={32} color={Colors.light.text} />
         </TouchableOpacity>
       </View>
 
       {/* Center greeting */}
       <ThemedText type="title" style={styles.title}>Hello, {name}!</ThemedText>
 
-      {/* Logout button */}
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <ThemedText type="defaultSemiBold" style={styles.buttonText}>Logout</ThemedText>
-      </TouchableOpacity>
+      {/* Render the active screen content here */}
+      <View style={styles.screenContent}>
+        {renderActiveScreen()}
+      </View>
 
-      {/* Footer Navigation */}
+      {/* Footer Navigation with 5 icons */}
       <View style={styles.footer}>
-        <TouchableOpacity onPress={() => router.push('/home')}>
-          <Ionicons name="home-outline" size={28} color='#008000' />
+        <TouchableOpacity onPress={() => setActiveScreen('home')}>
+          <Ionicons name="home-outline" size={28} color={activeScreen === 'home' ? '#008000' : Colors.light.text} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/settings')}>
-          <Ionicons name="settings-outline" size={28} color={Colors.light.text} />
+        <TouchableOpacity onPress={() => setActiveScreen('search')}>
+          <Ionicons name="search-outline" size={28} color={activeScreen === 'search' ? '#008000' : Colors.light.text} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/notifications')}>
-          <Ionicons name="notifications-outline" size={28} color={Colors.light.text} />
+        <TouchableOpacity onPress={() => setActiveScreen('favorites')}>
+          <Ionicons name="heart-outline" size={28} color={activeScreen === 'favorites' ? '#008000' : Colors.light.text} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setActiveScreen('settings')}>
+          <Ionicons name="settings-outline" size={28} color={activeScreen === 'settings' ? '#008000' : Colors.light.text} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleLogout}>
+          <Ionicons name="log-out-outline" size={28} color={Colors.light.text} />
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -99,36 +129,31 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    padding: 20,
     backgroundColor: '#fff',
+  },
+  topLeft: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
   },
   topRight: {
     position: 'absolute',
-    top: 40,
+    top: 20,
     right: 20,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    marginVertical: 20,
     textAlign: 'center',
   },
-  button: {
-    backgroundColor: '#007AFF',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 20,
-    marginTop: 20,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
+  screenContent: {
+    flexGrow: 1,  // Allow screen content to grow and take available space
   },
   footer: {
-    position: 'absolute',
-    bottom: 20,
-    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderColor: '#f0f0f0',
   },
 });
