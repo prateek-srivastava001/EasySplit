@@ -7,15 +7,15 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import HomeScreen from "./home";
-import Receipt from "./receipts"; // Import the new Receipt component
-import PeopleScreen from "./people"; // Import PeopleScreen
+import Receipt from "./receipts";
+import PeopleScreen from "./people";
 
 interface ReceiptItem {
   id: number;
   store: string;
   date: string;
   total: number;
-  type: "owed" | "owe"; // Ensure type is strictly defined
+  type: "owed" | "owe";
   items: Array<{ name: string; quantity: number; price: number }>;
 }
 
@@ -25,51 +25,48 @@ export default function DashboardScreen() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [previousReceipts, setPreviousReceipts] = useState<ReceiptItem[]>([
-  {
-    id: 1,
-    store: "Mcdonald's",
-    date: "26 Nov 2021",
-    total: 321.0,
-    type: "owed",
-    items: [
-      { name: "Big Mac", quantity: 2, price: 5.0 },
-      { name: "Fries", quantity: 1, price: 2.5 },
-    ],
-  },
-  {
-    id: 2,
-    store: "Amazon",
-    date: "14 Nov 2021",
-    total: 150.0,
-    type: "owe",
-    items: [
-      { name: "Book", quantity: 1, price: 50.0 },
-      { name: "Laptop Stand", quantity: 1, price: 100.0 },
-    ],
-  },
-  {
-    id: 3,
-    store: "WestSide",
-    date: "01 Nov 2021",
-    total: 75.0,
-    type: "owe",
-    items: [
-      { name: "Shirt", quantity: 1, price: 75.0 },
-    ],
-  },
-  {
-    id: 4,
-    store: "Wendy's",
-    date: "24 Nov 2021",
-    total: 321.0,
-    type: "owed",
-    items: [
-      { name: "Frosty", quantity: 2, price: 2.0 },
-      { name: "Burger", quantity: 2, price: 4.0 },
-    ],
-  },
-]);
-
+    {
+      id: 1,
+      store: "Mcdonald's",
+      date: "26 Nov 2021",
+      total: 321.0,
+      type: "owed",
+      items: [
+        { name: "Big Mac", quantity: 2, price: 5.0 },
+        { name: "Fries", quantity: 1, price: 2.5 },
+      ],
+    },
+    {
+      id: 2,
+      store: "Amazon",
+      date: "14 Nov 2021",
+      total: 150.0,
+      type: "owe",
+      items: [
+        { name: "Book", quantity: 1, price: 50.0 },
+        { name: "Laptop Stand", quantity: 1, price: 100.0 },
+      ],
+    },
+    {
+      id: 3,
+      store: "WestSide",
+      date: "01 Nov 2021",
+      total: 75.0,
+      type: "owe",
+      items: [{ name: "Shirt", quantity: 1, price: 75.0 }],
+    },
+    {
+      id: 4,
+      store: "Wendy's",
+      date: "24 Nov 2021",
+      total: 321.0,
+      type: "owed",
+      items: [
+        { name: "Frosty", quantity: 2, price: 2.0 },
+        { name: "Burger", quantity: 2, price: 4.0 },
+      ],
+    },
+  ]);
 
   useEffect(() => {
     checkAuth();
@@ -118,15 +115,15 @@ export default function DashboardScreen() {
   const renderActiveScreen = () => {
     switch (activeScreen) {
       case "home":
-        return <HomeScreen />;
+        return <HomeScreen username={name} />;
       case "receipt":
-        return <Receipt previousReceipts={previousReceipts} />; // Use the new Receipt component
+        return <Receipt previousReceipts={previousReceipts} />;
       case "people":
         return <PeopleScreen />;
       case "settings":
         return <ThemedText>Settings Screen (placeholder)</ThemedText>;
       default:
-        return <HomeScreen />;
+        return <HomeScreen username={name} />;
     }
   };
 
@@ -140,19 +137,24 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Profile Icon on the Top Left */}
-      <View style={styles.topLeft}>
-        <TouchableOpacity>
+      {/* Top Icons (Profile, Hello, and Notification) */}
+      <View style={styles.topBarContainer}>
+        <TouchableOpacity style={styles.iconContainer}>
           <Ionicons
             name="person-circle-outline"
             size={32}
             color={Colors.light.text}
           />
         </TouchableOpacity>
-      </View>
-      {/* Notification Icon on the Top Right */}
-      <View style={styles.topRight}>
-        <TouchableOpacity>
+
+        {/* Conditionally render the greeting only if the activeScreen is not "home" */}
+        {activeScreen !== "home" && (
+          <ThemedText type="title" style={styles.title}>
+            Hello, {name}!
+          </ThemedText>
+        )}
+
+        <TouchableOpacity style={styles.iconContainer}>
           <Ionicons
             name="notifications-outline"
             size={32}
@@ -160,12 +162,10 @@ export default function DashboardScreen() {
           />
         </TouchableOpacity>
       </View>
-      {/* Center greeting */}
-      <ThemedText type="title" style={styles.title}>
-        Hello, {name}!
-      </ThemedText>
+
       {/* Render the active screen content here */}
       <View style={styles.screenContent}>{renderActiveScreen()}</View>
+
       {/* Footer Navigation with 5 icons */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => setActiveScreen("home")}>
@@ -197,11 +197,7 @@ export default function DashboardScreen() {
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleLogout}>
-          <Ionicons
-            name="log-out-outline"
-            size={28}
-            color={Colors.light.text}
-          />
+          <Ionicons name="log-out-outline" size={28} color={Colors.light.text} />
         </TouchableOpacity>
       </View>
     </ThemedView>
@@ -213,23 +209,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  topLeft: {
-    position: "absolute",
-    top: 20,
-    left: 20,
+  topBarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center", // Ensures that the icons and text are vertically aligned
+    paddingHorizontal: 20,
+    marginTop: 20,
   },
-  topRight: {
-    position: "absolute",
-    top: 20,
-    right: 20,
+  iconContainer: {
+    padding: 10,
   },
   title: {
-    fontSize: 24,
-    marginVertical: 20,
+    fontSize: 18, // Adjusted font size to fit between icons
+    fontWeight: "bold",
+    color: "#008000",
     textAlign: "center",
+    flex: 1, // Ensure the text takes the available space between the icons
   },
   screenContent: {
     flexGrow: 1,
+    marginTop: 10, // Space below the top bar (adjust as needed)
   },
   footer: {
     flexDirection: "row",
