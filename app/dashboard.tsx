@@ -7,32 +7,69 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import HomeScreen from "./home";
-import Receipt from "./receipt"; // Import the Receipt component
+import Receipt from "./receipts"; // Import the new Receipt component
 import PeopleScreen from "./people"; // Import PeopleScreen
+
+interface ReceiptItem {
+  id: number;
+  store: string;
+  date: string;
+  total: number;
+  type: "owed" | "owe"; // Ensure type is strictly defined
+  items: Array<{ name: string; quantity: number; price: number }>;
+}
 
 export default function DashboardScreen() {
   const [user, setUser] = useState(null);
   const [activeScreen, setActiveScreen] = useState("home");
   const router = useRouter();
   const [name, setName] = useState("");
-  const [previousReceipts, setPreviousReceipts] = useState([
-    {
-      id: 1,
-      items: [
-        { name: "Item A", quantity: 1, price: 5 },
-        { name: "Item B", quantity: 2, price: 10 },
-      ],
-      total: 25,
-    },
-    {
-      id: 2,
-      items: [
-        { name: "Item C", quantity: 3, price: 7 },
-        { name: "Item D", quantity: 1, price: 15 },
-      ],
-      total: 36,
-    },
-  ]);
+  const [previousReceipts, setPreviousReceipts] = useState<ReceiptItem[]>([
+  {
+    id: 1,
+    store: "Mcdonald's",
+    date: "26 Nov 2021",
+    total: 321.0,
+    type: "owed",
+    items: [
+      { name: "Big Mac", quantity: 2, price: 5.0 },
+      { name: "Fries", quantity: 1, price: 2.5 },
+    ],
+  },
+  {
+    id: 2,
+    store: "Amazon",
+    date: "14 Nov 2021",
+    total: 150.0,
+    type: "owe",
+    items: [
+      { name: "Book", quantity: 1, price: 50.0 },
+      { name: "Laptop Stand", quantity: 1, price: 100.0 },
+    ],
+  },
+  {
+    id: 3,
+    store: "WestSide",
+    date: "01 Nov 2021",
+    total: 75.0,
+    type: "owe",
+    items: [
+      { name: "Shirt", quantity: 1, price: 75.0 },
+    ],
+  },
+  {
+    id: 4,
+    store: "Wendy's",
+    date: "24 Nov 2021",
+    total: 321.0,
+    type: "owed",
+    items: [
+      { name: "Frosty", quantity: 2, price: 2.0 },
+      { name: "Burger", quantity: 2, price: 4.0 },
+    ],
+  },
+]);
+
 
   useEffect(() => {
     checkAuth();
@@ -82,17 +119,8 @@ export default function DashboardScreen() {
     switch (activeScreen) {
       case "home":
         return <HomeScreen />;
-      case "search":
-        return (
-          <Receipt
-            items={[
-              { name: "Item 1", quantity: 2, price: 10 },
-              { name: "Item 2", quantity: 1, price: 15 },
-            ]}
-            total={35}
-            previousReceipts={previousReceipts}
-          />
-        );
+      case "receipt":
+        return <Receipt previousReceipts={previousReceipts} />; // Use the new Receipt component
       case "people":
         return <PeopleScreen />;
       case "settings":
@@ -147,11 +175,11 @@ export default function DashboardScreen() {
             color={activeScreen === "home" ? "#008000" : Colors.light.text}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setActiveScreen("search")}>
+        <TouchableOpacity onPress={() => setActiveScreen("receipt")}>
           <Ionicons
             name="receipt-outline"
             size={28}
-            color={activeScreen === "search" ? "#008000" : Colors.light.text}
+            color={activeScreen === "receipt" ? "#008000" : Colors.light.text}
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveScreen("people")}>
@@ -201,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   screenContent: {
-    flexGrow: 1, // Allow screen content to grow and take available space
+    flexGrow: 1,
   },
   footer: {
     flexDirection: "row",

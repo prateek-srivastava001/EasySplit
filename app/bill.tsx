@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "../components/ThemedText";
 
 interface ReceiptProps {
   items: Array<{ name: string; quantity: number; price: number }>;
