@@ -9,6 +9,7 @@ import { Colors } from "@/constants/Colors";
 import HomeScreen from "./home";
 import Receipt from "./receipts";
 import PeopleScreen from "./people";
+import ProfileScreen from "./profile"; // Ensure to import the ProfileScreen
 
 interface ReceiptItem {
   id: number;
@@ -24,6 +25,8 @@ export default function DashboardScreen() {
   const [activeScreen, setActiveScreen] = useState("home");
   const router = useRouter();
   const [name, setName] = useState("");
+  const [username, setUsername] = useState(""); // State for username
+  const [email, setEmail] = useState(""); // State for email
   const [previousReceipts, setPreviousReceipts] = useState<ReceiptItem[]>([
     {
       id: 1,
@@ -79,19 +82,18 @@ export default function DashboardScreen() {
         router.replace("/");
         return;
       }
-      const response = await fetch(
-        "https://something-not-sure.onrender.com/me",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const response = await fetch("https://something-not-sure.onrender.com/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
         setName(userData.user.first_name);
+        setUsername(userData.user.username); // Set username
+        setEmail(userData.user.email); // Set email
       } else {
         await AsyncStorage.removeItem("accessToken");
         router.replace("/");
@@ -120,6 +122,8 @@ export default function DashboardScreen() {
         return <Receipt previousReceipts={previousReceipts} />;
       case "people":
         return <PeopleScreen />;
+      case "profile":
+        return <ProfileScreen username={username} name={name} email={email} />; // Pass username, name, and email
       case "settings":
         return <ThemedText>Settings Screen (placeholder)</ThemedText>;
       default:
@@ -137,26 +141,18 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Top Icons (Profile, Hello, and Notification) */}
-      <View style={styles.topBarContainer}>
-        <TouchableOpacity style={styles.iconContainer}>
+      {/* Top Icons (Profile and Logout) */}
+      <View style={styles.topIconsContainer}>
+        <TouchableOpacity style={styles.iconContainer} onPress={() => setActiveScreen("profile")}>
           <Ionicons
             name="person-circle-outline"
             size={32}
             color={Colors.light.text}
           />
         </TouchableOpacity>
-
-        {/* Conditionally render the greeting only if the activeScreen is not "home" */}
-        {activeScreen !== "home" && (
-          <ThemedText type="title" style={styles.title}>
-            Hello, {name}!
-          </ThemedText>
-        )}
-
-        <TouchableOpacity style={styles.iconContainer}>
+        <TouchableOpacity style={styles.iconContainer} onPress={handleLogout}>
           <Ionicons
-            name="notifications-outline"
+            name="log-out-outline"
             size={32}
             color={Colors.light.text}
           />
@@ -166,7 +162,7 @@ export default function DashboardScreen() {
       {/* Render the active screen content here */}
       <View style={styles.screenContent}>{renderActiveScreen()}</View>
 
-      {/* Footer Navigation with 5 icons */}
+      {/* Footer Navigation with 4 icons */}
       <View style={styles.footer}>
         <TouchableOpacity onPress={() => setActiveScreen("home")}>
           <Ionicons
@@ -196,9 +192,6 @@ export default function DashboardScreen() {
             color={activeScreen === "settings" ? "#008000" : Colors.light.text}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleLogout}>
-          <Ionicons name="log-out-outline" size={28} color={Colors.light.text} />
-        </TouchableOpacity>
       </View>
     </ThemedView>
   );
@@ -209,26 +202,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
-  topBarContainer: {
+  topIconsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center", // Ensures that the icons and text are vertically aligned
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 0,
   },
   iconContainer: {
     padding: 10,
   },
-  title: {
-    fontSize: 18, // Adjusted font size to fit between icons
-    fontWeight: "bold",
-    color: "#008000",
-    textAlign: "center",
-    flex: 1, // Ensure the text takes the available space between the icons
-  },
   screenContent: {
     flexGrow: 1,
-    marginTop: 10, // Space below the top bar (adjust as needed)
   },
   footer: {
     flexDirection: "row",
