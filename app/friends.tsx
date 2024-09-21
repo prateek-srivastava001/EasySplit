@@ -8,14 +8,11 @@ import {
   StyleSheet,
   ScrollView,
   TextInput,
-  Image,
   ActivityIndicator,
   Modal,
 } from "react-native";
-
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { sendIntent } from "expo-linking";
 
 export default function PeopleScreen() {
   const [isFriendModalVisible, setFriendModalVisible] = useState(false);
@@ -181,9 +178,18 @@ export default function PeopleScreen() {
       {filteredRequests.length > 0 ? (
         filteredRequests.map((request, index) => (
           <View key={index} style={styles.friendItem}>
-            <Image
-              source={{ uri: "https://example.com/placeholder-image.jpg" }}
-              style={styles.profileImage}
+            <View
+              style={[
+                styles.profileCircle,
+                {
+                  backgroundColor:
+                    index % 3 === 0
+                      ? "#8F00FF"
+                      : index % 3 === 1
+                      ? "#FF1493"
+                      : "#FFD700",
+                }, // Alternating colors for requests: Purple, Pink, Gold
+              ]}
             />
             <View style={styles.friendInfo}>
               <Text style={styles.friendName}>
@@ -211,14 +217,22 @@ export default function PeopleScreen() {
         <Text style={styles.noRequestsText}>No pending requests.</Text>
       )}
 
-      {/* Your Friends Section */}
       <Text style={styles.sectionTitle}>YOUR FRIENDS</Text>
       {filteredFriends.length > 0 ? (
         filteredFriends.map((friend, index) => (
           <View key={index} style={styles.friendItem}>
-            <Image
-              source={{ uri: "https://example.com/placeholder-image.jpg" }}
-              style={styles.profileImage}
+            <View
+              style={[
+                styles.profileCircle,
+                {
+                  backgroundColor:
+                    index % 3 === 0
+                      ? "#00F38D"
+                      : index % 3 === 1
+                      ? "#E43CFF"
+                      : "#007AFF",
+                }, // Alternating colors for friends: Green, Pink, Orange
+              ]}
             />
             <View style={styles.friendInfo}>
               <Text style={styles.friendName}>
@@ -269,7 +283,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 0,
-    backgroundColor: "black",
+    backgroundColor: "#000", // Dark background
     padding: 15,
   },
   header: {
@@ -294,28 +308,32 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginTop: 8,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 15,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 8,
+    fontSize: 16,
+    color: "#fff",
   },
   searchIcon: {
     marginRight: 10,
   },
-  searchInput: {
-    flex: 1,
-    color: "#fff",
-    height: 40,
-  },
   sectionTitle: {
-    marginTop: 10,
-    fontSize: 14,
-    color: "#999",
+    fontSize: 16,
+    fontWeight: "bold",
     marginBottom: 10,
+    color: "#fff",
   },
   friendItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 10,
+    backgroundColor: "#333",
+    padding: 10,
+    borderRadius: 16,
   },
-  profileImage: {
+  profileCircle: {
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -325,17 +343,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   friendName: {
-    color: "#fff",
+    fontSize: 16,
     fontWeight: "bold",
+    color: "#fff",
   },
   friendUsername: {
-    color: "#999",
+    fontSize: 14,
+    color: "#bbb",
   },
   addButton: {
-    backgroundColor: "#333",
+    backgroundColor: "#4CAF50",
     paddingHorizontal: 15,
-    paddingVertical: 5,
-    borderRadius: 15,
+    paddingVertical: 8,
+    borderRadius: 16,
     marginRight: 10,
   },
   addButtonText: {
@@ -343,59 +363,54 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   closeButton: {
-    padding: 5,
+    backgroundColor: "#FF4500",
+    padding: 10,
+    borderRadius: 50,
   },
   noRequestsText: {
-    color: "#999",
     textAlign: "center",
+    color: "#bbb",
+    marginBottom: 10,
   },
   noFriendsText: {
-    color: "#999",
     textAlign: "center",
-  },
-  disabledButton: {
-    opacity: 0.5,
+    color: "#bbb",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: "#0c0c0c",
+    backgroundColor: "#333",
     padding: 20,
-    borderRadius: 18,
-    width: "80%",
-    alignItems: "center",
+    margin: 20,
+    borderRadius: 16,
   },
   modalTitle: {
-    color: "#fff",
     fontSize: 18,
-    paddingTop: 12,
-    marginBottom: 24,
-    textAlign: "left",
-    width: "100%",
+    fontWeight: "bold",
+    color: "#fff",
+    marginBottom: 10,
   },
   modalInput: {
-    width: "100%",
-    backgroundColor: "#222",
+    backgroundColor: "#444",
     padding: 10,
-    borderRadius: 12,
+    borderRadius: 16,
     color: "#fff",
-    marginBottom: 10,
+    marginBottom: 15,
   },
   modalButton: {
-    backgroundColor: "#ffffff",
-    padding: 10,
-    marginTop: 12,
-    borderRadius: 8,
-    width: "50%",
-    alignItems: "center",
-    marginBottom: 10,
+    backgroundColor: "#4CAF50",
+    paddingVertical: 10,
+    borderRadius: 16,
   },
   modalButtonText: {
-    color: "#000",
+    textAlign: "center",
+    color: "#fff",
     fontWeight: "bold",
+  },
+  disabledButton: {
+    backgroundColor: "#999",
   },
 });

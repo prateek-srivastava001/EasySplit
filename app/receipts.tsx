@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { useRouter } from "expo-router"; // Import useRouter for navigation
+import { useRouter } from "expo-router";
 
 interface ReceiptItem {
   id: number;
@@ -17,18 +17,19 @@ interface ReceiptProps {
 }
 
 const Receipt: React.FC<ReceiptProps> = ({ previousReceipts }) => {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
 
   const handleReceiptClick = (receipt: ReceiptItem) => {
-    // Navigate to the new screen and pass the receipt data as params
     router.push({
       pathname: "/receiptDetails",
-      params: { receipt: JSON.stringify(receipt) }, // Pass the receipt as a string
+      params: { receipt: JSON.stringify(receipt) },
     });
   };
 
   return (
-    <View style={styles.receiptContainer}>
+    <View style={styles.container}>
+      <ThemedText style={styles.title}>Receipts</ThemedText>
+
       {previousReceipts.map((receipt) => (
         <TouchableOpacity
           key={receipt.id}
@@ -40,11 +41,21 @@ const Receipt: React.FC<ReceiptProps> = ({ previousReceipts }) => {
               <ThemedText style={styles.receiptDate}>{receipt.date}</ThemedText>
             </View>
             <View style={styles.receiptTotalContainer}>
-              <ThemedText style={styles.receiptTotal}>
+              <ThemedText
+                style={[
+                  styles.receiptTotal,
+                  { color: receipt.type === "owed" ? "#81FFE8" : "#FF4C24" },
+                ]}
+              >
                 {receipt.type === "owed" ? "You are owed" : "You owe"}
               </ThemedText>
-              <ThemedText style={styles.receiptTotal}>
-                ${receipt.total.toFixed(2)}
+              <ThemedText
+                style={[
+                  styles.receiptTotal,
+                  { color: receipt.type === "owed" ? "#81FFE8" : "#FF4C24" },
+                ]}
+              >
+                ₹{receipt.total.toFixed(2)}
               </ThemedText>
             </View>
           </View>
@@ -55,49 +66,45 @@ const Receipt: React.FC<ReceiptProps> = ({ previousReceipts }) => {
 };
 
 const styles = StyleSheet.create({
-  receiptContainer: {
-    padding: 16,
+  container: {
+    flex: 1,
+    backgroundColor: "#000", // Black background
+    paddingHorizontal: 16,
+    paddingTop: 40,
+  },
+  title: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
   },
   receiptItem: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
-    backgroundColor: "#f9f9f9",
+    padding: 16,
+    backgroundColor: "#1e1e1e", // Darker background for the receipt items
     marginBottom: 16,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    width: "100%",
-    position: "relative",
+    alignItems: "flex-start", // Align items to the left
   },
   receiptDetails: {
     flexDirection: "column",
-    flex: 1,
   },
   storeName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "black",
+    color: "#fff",
   },
   receiptDate: {
     fontSize: 14,
-    color: "#666",
+    color: "#888",
   },
   receiptTotalContainer: {
-    position: "absolute",
-    right: 20,
-    bottom: 10,
     alignItems: "flex-end",
   },
   receiptTotal: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
-    color: "#008000",
-    textAlign: "right",
-    padding: 0,
-    margin: 0,
   },
 });
 
