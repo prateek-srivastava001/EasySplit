@@ -8,8 +8,8 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import HomeScreen from "./home";
 import Receipt from "./receipts";
-import PeopleScreen from "./people";
-import ProfileScreen from "./profile"; // Ensure to import the ProfileScreen
+import ProfileScreen from "./profile";
+import PeopleScreen from "./friends"; // Ensure PeopleScreen is imported
 
 interface ReceiptItem {
   id: number;
@@ -82,12 +82,15 @@ export default function DashboardScreen() {
         router.replace("/");
         return;
       }
-      const response = await fetch("https://something-not-sure.onrender.com/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await fetch(
+        "https://something-not-sure.onrender.com/me",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -121,9 +124,9 @@ export default function DashboardScreen() {
       case "receipt":
         return <Receipt previousReceipts={previousReceipts} />;
       case "people":
-        return <PeopleScreen />;
+        return <PeopleScreen />; // Render PeopleScreen when 'people' is selected
       case "profile":
-        return <ProfileScreen username={username} name={name} email={email} />; // Pass username, name, and email
+        return <ProfileScreen username={username} name={name} email={email} />;
       case "settings":
         return <ThemedText>Settings Screen (placeholder)</ThemedText>;
       default:
@@ -141,20 +144,22 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Top Icons (Profile and Logout) */}
       <View style={styles.topIconsContainer}>
-        <TouchableOpacity style={styles.iconContainer} onPress={() => setActiveScreen("profile")}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => setActiveScreen("profile")}
+        >
           <Ionicons
             name="person-circle-outline"
             size={32}
-            color={Colors.light.text}
+            color="#ffffff" // White color for top nav icon
           />
         </TouchableOpacity>
         <TouchableOpacity style={styles.iconContainer} onPress={handleLogout}>
           <Ionicons
             name="log-out-outline"
             size={32}
-            color={Colors.light.text}
+            color="#ffffff" // White color for top nav icon
           />
         </TouchableOpacity>
       </View>
@@ -168,28 +173,28 @@ export default function DashboardScreen() {
           <Ionicons
             name="home-outline"
             size={28}
-            color={activeScreen === "home" ? "#008000" : Colors.light.text}
+            color={activeScreen === "home" ? "#008000" : "#ffffff"} // White for inactive, green for active
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveScreen("receipt")}>
           <Ionicons
             name="receipt-outline"
             size={28}
-            color={activeScreen === "receipt" ? "#008000" : Colors.light.text}
+            color={activeScreen === "receipt" ? "#008000" : "#ffffff"} // White for inactive, green for active
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveScreen("people")}>
           <Ionicons
             name="heart-outline"
             size={28}
-            color={activeScreen === "people" ? "#008000" : Colors.light.text}
+            color={activeScreen === "people" ? "#008000" : "#ffffff"} // White for inactive, green for active
           />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveScreen("settings")}>
           <Ionicons
             name="settings-outline"
             size={28}
-            color={activeScreen === "settings" ? "#008000" : Colors.light.text}
+            color={activeScreen === "settings" ? "#008000" : "#ffffff"} // White for inactive, green for active
           />
         </TouchableOpacity>
       </View>
@@ -206,7 +211,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    marginTop: 0,
+    paddingTop: 40, // Adjusted for spacing
+    backgroundColor: "#1a1a1a", // Dark background for top nav
+    paddingBottom: 10, // Add some padding below icons
   },
   iconContainer: {
     padding: 10,
@@ -218,7 +225,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
+    backgroundColor: "#1a1a1a", // Dark background for bottom nav
     borderTopWidth: 1,
-    borderColor: "#f0f0f0",
+    borderColor: "#333", // Lighter border
   },
 });

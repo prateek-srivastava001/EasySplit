@@ -1,4 +1,3 @@
-// ProfileScreen.tsx
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
@@ -11,17 +10,20 @@ interface ProfileScreenProps {
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ name, username, email }) => {
   return (
     <View style={styles.container}>
+      {/* Profile Title */}
       <Text style={styles.title}>Profile</Text>
+
+      {/* Profile Details */}
       <View style={styles.profileItem}>
-        <Text style={styles.label}>Name:</Text>
+        <Text style={styles.label}>Name</Text>
         <Text style={styles.value}>{name}</Text>
       </View>
       <View style={styles.profileItem}>
-        <Text style={styles.label}>Username:</Text>
+        <Text style={styles.label}>Username</Text>
         <Text style={styles.value}>{username}</Text>
       </View>
       <View style={styles.profileItem}>
-        <Text style={styles.label}>Email:</Text>
+        <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{email}</Text>
       </View>
     </View>
@@ -32,33 +34,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: "#1a1a1a", // Dark background
   },
   title: {
-    fontSize: 24,
+    fontSize: 28, // Larger title font
     fontWeight: "bold",
+    color: "#fff", // White text color
     marginBottom: 20,
-    textAlign: "center", // Center the title
   },
   profileItem: {
     flexDirection: "row",
-    justifyContent: "space-between", // Space between label and value
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
-    paddingVertical: 10, // Added vertical padding
-    borderBottomWidth: 1, // Add a bottom border for separation
-    borderColor: "#e0e0e0", // Light gray color for the border
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderColor: "#333", // Slightly lighter border to separate fields
   },
   label: {
     fontWeight: "bold",
     fontSize: 16,
-    color: "#333",
-    width: "40%", // Set a width for labels to align them properly
+    color: "#999", // Lighter color for labels
   },
   value: {
     fontSize: 16,
-    color: "#555", // Slightly lighter color for values
-    textAlign: "right", // Align values to the right
-    width: "60%", // Set a width for values
+    color: "#fff", // White color for values
+    textAlign: "right",
   },
 });
 
