@@ -1,15 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
-import { useLocalSearchParams } from "expo-router"; // To get route params
+import { useLocalSearchParams } from "expo-router";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation from React Navigation
 
 const ReceiptDetails = () => {
   const { receipt } = useLocalSearchParams();
+  const navigation = useNavigation(); // Access the navigation object
 
-  // Handle case where receipt is an array
+  // Parse the receipt data
   const receiptData = Array.isArray(receipt)
     ? JSON.parse(receipt[0]) // Take the first element if it's an array
     : JSON.parse(receipt || "{}"); // Parse if it's a string, or use an empty object as fallback
+
+  // Update the header to keep the default back arrow with the tail, and other style changes
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: "", // No title in the header
+      headerBackTitleVisible: true, // Keep the back button text for iOS
+      headerStyle: {
+        backgroundColor: "#1a1a1a", // Dark background for the header
+        borderBottomWidth: 0, // Remove the line under the header
+        elevation: 0, // Remove the shadow for Android
+      },
+      headerTintColor: "#fff", // White color for the back arrow and text
+    });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
