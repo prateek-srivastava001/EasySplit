@@ -8,8 +8,8 @@ import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import HomeScreen from "./home";
 import Receipt from "./receipts";
-import PeopleScreen from "./people";
-import ProfileScreen from "./profile"; // Ensure to import the ProfileScreen
+import ProfileScreen from "./profile";
+import PeopleScreen from "./friends"; // Ensure PeopleScreen is imported
 
 interface ReceiptItem {
   id: number;
@@ -82,12 +82,15 @@ export default function DashboardScreen() {
         router.replace("/");
         return;
       }
-      const response = await fetch("https://something-not-sure.onrender.com/me", {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await fetch(
+        "https://something-not-sure.onrender.com/me",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
@@ -121,9 +124,9 @@ export default function DashboardScreen() {
       case "receipt":
         return <Receipt previousReceipts={previousReceipts} />;
       case "people":
-        return <PeopleScreen />;
+        return <PeopleScreen />; // Render PeopleScreen when 'people' is selected
       case "profile":
-        return <ProfileScreen username={username} name={name} email={email} />; // Pass username, name, and email
+        return <ProfileScreen username={username} name={name} email={email} />;
       case "settings":
         return <ThemedText>Settings Screen (placeholder)</ThemedText>;
       default:
@@ -141,9 +144,11 @@ export default function DashboardScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      {/* Top Icons (Profile and Logout) */}
       <View style={styles.topIconsContainer}>
-        <TouchableOpacity style={styles.iconContainer} onPress={() => setActiveScreen("profile")}>
+        <TouchableOpacity
+          style={styles.iconContainer}
+          onPress={() => setActiveScreen("profile")}
+        >
           <Ionicons
             name="person-circle-outline"
             size={32}

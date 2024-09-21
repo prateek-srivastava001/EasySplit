@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import {
   View,
-  TouchableWithoutFeedback,Keyboard,
+  TouchableWithoutFeedback,
+  Keyboard,
   Text,
   TouchableOpacity,
   StyleSheet,
@@ -29,24 +30,30 @@ export default function PeopleScreen() {
       try {
         const accessToken = await AsyncStorage.getItem("accessToken");
 
-        const friendsResponse = await fetch("https://something-not-sure.onrender.com/friend/all", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const friendsResponse = await fetch(
+          "https://something-not-sure.onrender.com/friend/all",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
         const friendsData = await friendsResponse.json();
         if (friendsData.status === "success") {
           setFriends(friendsData.friends || []);
         }
 
-        const requestsResponse = await fetch("https://something-not-sure.onrender.com/friend/requests/pending", {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
+        const requestsResponse = await fetch(
+          "https://something-not-sure.onrender.com/friend/requests/pending",
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
         const requestsData = await requestsResponse.json();
         if (requestsData.status === "success") {
           setPendingRequests(requestsData.requests || []);
@@ -63,30 +70,39 @@ export default function PeopleScreen() {
     setLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const newPendingRequests = pendingRequests.filter((request) => request.sender_email !== senderEmail);
-      const friendToAdd = pendingRequests.find((request) => request.sender_email === senderEmail);
-      
+      const newPendingRequests = pendingRequests.filter(
+        (request) => request.sender_email !== senderEmail
+      );
+      const friendToAdd = pendingRequests.find(
+        (request) => request.sender_email === senderEmail
+      );
+
       if (!friendToAdd) {
         console.error("Friend to add not found.");
         return;
       }
-      
+
       setPendingRequests(newPendingRequests);
       setFriends([...friends, friendToAdd]);
-  
-      const response = await fetch("https://something-not-sure.onrender.com/friend/confirm", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ sender_email: senderEmail }),
-      });
-  
+
+      const response = await fetch(
+        "https://something-not-sure.onrender.com/friend/confirm",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ sender_email: senderEmail }),
+        }
+      );
+
       const data = await response.json();
       if (data.status !== "success") {
         setPendingRequests([...newPendingRequests, friendToAdd]);
-        setFriends(friends.filter((friend) => friend.sender_email !== senderEmail));
+        setFriends(
+          friends.filter((friend) => friend.sender_email !== senderEmail)
+        );
         console.error("Failed to confirm friend request:", data.message);
       }
     } catch (error) {
@@ -95,20 +111,22 @@ export default function PeopleScreen() {
       setLoading(false);
     }
   };
-  
 
   const handleSendFriendRequest = async () => {
     if (!email) return;
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await fetch("https://something-not-sure.onrender.com/friend/add", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ receiver_email:email }),
-      });
+      const response = await fetch(
+        "https://something-not-sure.onrender.com/friend/add",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ receiver_email: email }),
+        }
+      );
 
       const data = await response.json();
       if (data.status === "success") {
@@ -144,7 +162,12 @@ export default function PeopleScreen() {
       </View>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search-outline" size={20} color="#999" style={styles.searchIcon} />
+        <Ionicons
+          name="search-outline"
+          size={20}
+          color="#999"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Add or search friends"
@@ -173,7 +196,11 @@ export default function PeopleScreen() {
               onPress={() => !loading && handleAddFriend(request.sender_email)}
               disabled={loading}
             >
-              {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.addButtonText}>ADD</Text>}
+              {loading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.addButtonText}>ADD</Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity style={styles.closeButton}>
               <Ionicons name="close" size={24} color="#fff" />
@@ -194,7 +221,9 @@ export default function PeopleScreen() {
               style={styles.profileImage}
             />
             <View style={styles.friendInfo}>
-              <Text style={styles.friendName}>{friend.first_name} {friend.last_name}</Text>
+              <Text style={styles.friendName}>
+                {friend.first_name} {friend.last_name}
+              </Text>
               <Text style={styles.friendUsername}>{friend.username}</Text>
             </View>
           </View>
@@ -203,32 +232,35 @@ export default function PeopleScreen() {
         <Text style={styles.noFriendsText}>No friends found.</Text>
       )}
 
-    <Modal
-      visible={isFriendModalVisible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={() => setFriendModalVisible(false)}
-    >
-      <TouchableWithoutFeedback onPress={() => setFriendModalVisible(false)}>
-        <View style={styles.modalContainer}>
-          <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Enter Friend's Email</Text>
-              <TextInput
-                style={styles.modalInput}
-                placeholder="Email"
-                placeholderTextColor="#999"
-                value={email}
-                onChangeText={setEmail}
-              />
-              <TouchableOpacity style={styles.modalButton} onPress={handleSendFriendRequest}>
-                <Text style={styles.modalButtonText}>Add Friend</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
+      <Modal
+        visible={isFriendModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setFriendModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setFriendModalVisible(false)}>
+          <View style={styles.modalContainer}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Enter Friend's Email</Text>
+                <TextInput
+                  style={styles.modalInput}
+                  placeholder="Email"
+                  placeholderTextColor="#999"
+                  value={email}
+                  onChangeText={setEmail}
+                />
+                <TouchableOpacity
+                  style={styles.modalButton}
+                  onPress={handleSendFriendRequest}
+                >
+                  <Text style={styles.modalButtonText}>Add Friend</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </ScrollView>
   );
 }
@@ -236,7 +268,7 @@ export default function PeopleScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 70,
+    marginTop: 0,
     backgroundColor: "black",
     padding: 15,
   },
@@ -264,7 +296,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
-    searchIcon: {
+  searchIcon: {
     marginRight: 10,
   },
   searchInput: {
@@ -324,20 +356,20 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.5,
   },
-  modalContainer: { 
-    flex: 1, 
+  modalContainer: {
+    flex: 1,
     justifyContent: "center",
-    alignItems: "center", 
-    backgroundColor: "rgba(0, 0, 0, 0.8)", 
-  }, 
-  modalContent: { 
-    backgroundColor: "#0c0c0c", 
-    padding: 20, 
-    borderRadius: 18, 
-    width: "80%", 
-    alignItems: "center", 
-  }, 
-  modalTitle: { 
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  modalContent: {
+    backgroundColor: "#0c0c0c",
+    padding: 20,
+    borderRadius: 18,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
     color: "#fff",
     fontSize: 18,
     paddingTop: 12,
@@ -345,24 +377,25 @@ const styles = StyleSheet.create({
     textAlign: "left",
     width: "100%",
   },
-    modalInput: { 
-    width: "100%", 
-    backgroundColor: "#222", 
-    padding: 10, 
-    borderRadius: 12, 
-    color: "#fff", 
-    marginBottom: 10, 
-  }, 
-  modalButton: { 
-    backgroundColor: "#ffffff", 
-    padding: 10, 
+  modalInput: {
+    width: "100%",
+    backgroundColor: "#222",
+    padding: 10,
+    borderRadius: 12,
+    color: "#fff",
+    marginBottom: 10,
+  },
+  modalButton: {
+    backgroundColor: "#ffffff",
+    padding: 10,
     marginTop: 12,
-    borderRadius: 8, 
-    width: "50%", 
-    alignItems: "center", 
-    marginBottom: 10, 
-  }, 
-  modalButtonText: { 
-    color: "#000", 
-    fontWeight: "bold", 
-  }});
+    borderRadius: 8,
+    width: "50%",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  modalButtonText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+});
