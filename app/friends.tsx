@@ -14,6 +14,7 @@ import {
 
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { sendIntent } from "expo-linking";
 
 export default function PeopleScreen() {
   const [isFriendModalVisible, setFriendModalVisible] = useState(false);
@@ -62,13 +63,17 @@ export default function PeopleScreen() {
     setLoading(true);
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-
-      // Optimistic UI update
-      const newPendingRequests = pendingRequests.filter((request) => request.username !== senderEmail);
-      const friendToAdd = pendingRequests.find((request) => request.username === senderEmail);
+      const newPendingRequests = pendingRequests.filter((request) => request.sender_email !== senderEmail);
+      const friendToAdd = pendingRequests.find((request) => request.sender_email === senderEmail);
+      
+      if (!friendToAdd) {
+        console.error("Friend to add not found.");
+        return;
+      }
+      
       setPendingRequests(newPendingRequests);
       setFriends([...friends, friendToAdd]);
-
+  
       const response = await fetch("https://something-not-sure.onrender.com/friend/confirm", {
         method: "POST",
         headers: {
@@ -77,36 +82,32 @@ export default function PeopleScreen() {
         },
         body: JSON.stringify({ sender_email: senderEmail }),
       });
-
+  
       const data = await response.json();
       if (data.status !== "success") {
-        // Revert the UI changes in case of failure
         setPendingRequests([...newPendingRequests, friendToAdd]);
-        setFriends(friends.filter((friend) => friend.username !== senderEmail));
+        setFriends(friends.filter((friend) => friend.sender_email !== senderEmail));
         console.error("Failed to confirm friend request:", data.message);
       }
     } catch (error) {
-      // Revert UI changes in case of an error
-      const friendToAdd = pendingRequests.find((request) => request.username === senderEmail);
-      setPendingRequests([...pendingRequests, friendToAdd]);
-      setFriends(friends.filter((friend) => friend.username !== senderEmail));
       console.error("Error confirming friend request:", error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleSendFriendRequest = async () => {
     if (!email) return;
     try {
       const accessToken = await AsyncStorage.getItem("accessToken");
-      const response = await fetch("https://something-not-sure.onrender.com/friend/send", {
+      const response = await fetch("https://something-not-sure.onrender.com/friend/add", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ receiver_email:email }),
       });
 
       const data = await response.json();
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#222", 
     padding: 10, 
     borderRadius: 12, 
-    color: "#000", 
+    color: "#fff", 
     marginBottom: 10, 
   }, 
   modalButton: { 
